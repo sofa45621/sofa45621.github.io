@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文化小吃部 - 線上點餐系統</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft JhengHei", sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+        }
+
+        .banner {
+            width: 100%;
+            height: 200px;
+            background-image: url('6.jpg');
+            background-size: cover;
+            background-position: center;
+        }
+
+        header {
+            background-color: #fff;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .contact-info {
+            margin: 10px 0;
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .menu-container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .menu-item {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .menu-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .menu-item img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .menu-info {
+            padding: 15px;
+        }
+
+        .menu-title {
+            font-size: 1.2em;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .menu-description {
+            color: #666;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+        }
+
+        .menu-price {
+            color: #e74c3c;
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+        }
+
+        .order-btn {
+            width: 100%;
+            padding: 8px;
+            background-color: #2ecc71;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .order-btn:hover {
+            background-color: #27ae60;
+        }
+
+        #cart {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            background: #2ecc71;
+            padding: 15px;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #e74c3c;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8em;
+        }
+
+        #cart-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+            min-width: 300px;
+        }
+
+        .modal-backdrop {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .checkout-btn {
+            width: 100%;
+            padding: 10px;
+            background-color: #2ecc71;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="banner"></div>
+    <header>
+        <h1>文化小吃部</h1>
+        <div class="contact-info">
+            <p>地址：臺北市11114陽明山華岡路55號</p>
+            <p>電話：23334445</p>
+        </div>
+    </header>
+
+    <div class="menu-container">
+        <div class="menu-item">
+            <img src="1.webp" alt="牛肉麵">
+            <div class="menu-info">
+                <h3 class="menu-title">牛肉麵</h3>
+                <p class="menu-description">川味牛肉五塊加上刀切麵</p>
+                <p class="menu-price">NT$120</p>
+                <button class="order-btn" onclick="addToCart('牛肉麵', 120)">加入購物車</button>
+            </div>
+        </div>
+
+        <div class="menu-item">
+            <img src="2.jpg" alt="牛肉蛋炒飯">
+            <div class="menu-info">
+                <h3 class="menu-title">牛肉蛋炒飯</h3>
+                <p class="menu-description">特製黑胡椒牛肩肉炒飯</p>
+                <p class="menu-price">NT$90</p>
+                <button class="order-btn" onclick="addToCart('牛肉蛋炒飯', 90)">加入購物車</button>
+            </div>
+        </div>
+
+        <div class="menu-item">
+            <img src="3.png" alt="台南滷肉飯">
+            <div class="menu-info">
+                <h3 class="menu-title">台南滷肉飯</h3>
+                <p class="menu-description">傳統台式滷肉飯加上黃瓜片</p>
+                <p class="menu-price">NT$50</p>
+                <button class="order-btn" onclick="addToCart('台南滷肉飯', 50)">加入購物車</button>
+            </div>
+        </div>
+
+        <div class="menu-item">
+            <img src="4.jpg" alt="頂級陽春麵">
+            <div class="menu-info">
+                <h3 class="menu-title">頂級陽春麵</h3>
+                <p class="menu-description">簡單美味的陽春麵加上一顆鰹魚</p>
+                <p class="menu-price">NT$60</p>
+                <button class="order-btn" onclick="addToCart('頂級陽春麵', 60)">加入購物車</button>
+            </div>
+        </div>
+
+        <div class="menu-item">
+            <img src="5.jpg" alt="功夫麵">
+            <div class="menu-info">
+                <h3 class="menu-title">功夫麵</h3>
+                <p class="menu-description">用魚肉製作的麵條加上精燉的豬骨湯</p>
+                <p class="menu-price">NT$60</p>
+                <button class="order-btn" onclick="addToCart('功夫麵', 60)">加入購物車</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="cart" onclick="toggleCart()">
+        🛒
+        <span class="cart-count">0</span>
+    </div>
+
+    <div class="modal-backdrop" onclick="toggleCart()"></div>
+    <div id="cart-modal">
+        <h2>購物車</h2>
+        <div id="cart-items"></div>
+        <p>總計: <span id="cart-total">NT$0</span></p>
+        <button class="checkout-btn" onclick="checkout()">結帳</button>
+    </div>
+
+    <script>
+        let cart = [];
+        
+        function addToCart(name, price) {
+            cart.push({ name, price });
+            updateCartDisplay();
+            showNotification(`已加入 ${name} 到購物車`);
+        }
+
+        function updateCartDisplay() {
+            const cartCount = document.querySelector('.cart-count');
+            const cartItems = document.getElementById('cart-items');
+            const cartTotal = document.getElementById('cart-total');
+            
+            cartCount.textContent = cart.length;
+            
+            cartItems.innerHTML = '';
+            let total = 0;
+            
+            cart.forEach((item, index) => {
+                const cartItem = document.createElement('div');
+                cartItem.className = 'cart-item';
+                cartItem.innerHTML = `
+                    <span>${item.name} - NT$${item.price}</span>
+                    <button onclick="removeFromCart(${index})">✕</button>
+                `;
+                cartItems.appendChild(cartItem);
+                total += item.price;
+            });
+            
+            cartTotal.textContent = `NT$${total}`;
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCartDisplay();
+        }
+
+        function toggleCart() {
+            const modal = document.getElementById('cart-modal');
+            const backdrop = document.querySelector('.modal-backdrop');
+            
+            if (modal.style.display === 'block') {
+                modal.style.display = 'none';
+                backdrop.style.display = 'none';
+            } else {
+                modal.style.display = 'block';
+                backdrop.style.display = 'block';
+            }
+        }
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.style.position = 'fixed';
+            notification.style.bottom = '80px';
+            notification.style.right = '20px';
+            notification.style.backgroundColor = '#2ecc71';
+            notification.style.color = 'white';
+            notification.style.padding = '10px 20px';
+            notification.style.borderRadius = '4px';
+            notification.style.zIndex = '1000';
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 2000);
+        }
+
+        function checkout() {
+            if (cart.length === 0) {
+                alert('購物車是空的！');
+                return;
+            }
+            
+            const total = cart.reduce((sum, item) => sum + item.price, 0);
+            alert(`感謝您的訂購！\n總金額：NT$${total}\n我們將盡快為您準備餐點。`);
+            
+            cart = [];
+            updateCartDisplay();
+            toggleCart();
+        }
+    </script>
+</body>
+</html>
